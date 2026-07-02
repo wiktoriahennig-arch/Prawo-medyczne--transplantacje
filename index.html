@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Wiedzy: Prawne Uregulowania Przeszczepów</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-teal-600 to-cyan-700 text-white shadow-md py-6 px-4 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold tracking-tight">Prawo Medyczne – Wykład 3 ⚖️</h1>
+                <p class="text-teal-100 text-sm mt-1">Ustawa transplantacyjna, rejestry, zgody i przepisy karne (52 pytania)</p>
+            </div>
+            <div class="bg-white/10 backdrop-blur-md rounded-lg p-3 text-center border border-white/20 min-w-[180px]">
+                <div class="text-xs uppercase tracking-wider text-teal-200 font-semibold">Twój wynik</div>
+                <div class="text-2xl font-black mt-1" id="score-display">0 / 52</div>
+                <div class="text-[10px] text-teal-100 mt-1" id="percent-display">Postęp: 0%</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-4xl w-full mx-auto px-4 py-8">
+        
+        <!-- Controls -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 mb-8 flex flex-wrap gap-4 items-center justify-between">
+            <div class="flex items-center gap-2">
+                <span class="inline-flex h-3.5 w-3.5 rounded-full bg-teal-500 animate-pulse"></span>
+                <span class="text-sm font-medium text-slate-600" id="stats-counter">Rozwiązano: 0 z 52 pytań</span>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="resetTest()" class="px-4 py-2 text-sm font-semibold text-slate-700 hover:text-red-600 hover:bg-red-50 border border-slate-200 rounded-lg transition-colors">
+                    Resetuj test
+                </button>
+                <button onclick="showAllCorrectAnswers()" class="px-4 py-2 text-sm font-semibold text-white bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors">
+                    Pokaż odpowiedzi
+                </button>
+            </div>
+        </div>
+
+        <!-- Questions Container -->
+        <div id="questions-container" class="space-y-6">
+            <!-- Questions injected via JS -->
+        </div>
+
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 text-center py-4 mt-12 border-t border-slate-800 text-xs">
+        <p>Aplikacja treningowa – Ustawa o pobieraniu, przechowywaniu i przeszczepianiu komórek, tkanek i narządów.</p>
+    </footer>
+
+    <script>
+        const quizData = [
+            {
+                id: 1,
+                question: "Podstawowym aktem prawnym regulującym transplantologię w Polsce jest ustawa z dnia:",
+                correct: "1 lipca 2005 r.",
+                options: ["1 lipca 2005 r.", "15 lipca 2011 r.", "6 listopada 2008 r."],
+                explanations: {
+                    "1st lipca 2005 r.": "Prawidłowo! Chodzi o Ustawę o pobieraniu, przechowywaniu i przeszczepianiu komórek, tkanek i narządów.",
+                    "15 lipca 2011 r.": "Błąd! To data ustawy o zawodach pielęgniarki i położnej.",
+                    "6 listopada 2008 r.": "Błąd! To data ustawy o prawach pacjenta i Rzeczniku Praw Pacjenta."
+                }
+            },
+            {
+                id: 2,
+                question: "Fundamentalną zasadą transplantacji tkanek i narządów od dawcy (art. 3 ust. 1) jest:",
+                correct: "nieodpłatność",
+                options: ["pełna odpłatność", "nieodpłatność", "zależność od decyzji NFZ"],
+                explanations: {
+                    "pełna odpłatność": "Błąd! Pobieranie i obrót komórkami czy narządami w celu uzyskania korzyści majątkowej jest w Polsce surowo zabronione.",
+                    "nieodpłatność": "Prawidłowo! Za pobrane części nie można żądać ani przyjmować zapłaty, innej korzyści majątkowej ani osobistej.",
+                    "zależność od decyzji NFZ": "Błąd! NFZ finansuje procedury medyczne, ale zasada nieodpłatności samego narządu jest powszechna i sztywna."
+                }
+            },
+            {
+                id: 3,
+                question: "Zwrot kosztów pobrania, przechowywania, sterylizacji czy dystrybucji dokonywany przez Poltransplant lub NFZ:",
+                correct: "nie stanowi korzyści majątkowej dawcy",
+                options: ["jest traktowany jako zapłata za narząd", "nie stanowi korzyści majątkowej dawcy", "wymaga zgody prokuratora"],
+                explanations: {
+                    "jest traktowany jako zapłata za narząd": "Błąd! Ustawa wprost wyłącza zwrot kosztów techniczno-medycznych z pojęcia zapłaty.",
+                    "nie stanowi korzyści majątkowej dawcy": "Prawidłowo! Zwrot realnych kosztów obsługi medyczno-logistycznej nie jest zapłatą i nie stanowi korzyści.",
+                    "wymaga zgody prokuratora": "Błąd! Rozliczenia finansowe między szpitalami, bankami tkanek a NFZ nie wymagają udziału prokuratury."
+                }
+            },
+            {
+                id: 4,
+                question: "Rozpowszechnianie ogłoszenia o odpłatnym zbyciu, nabyciu lub pośredniczeniu w obrocie narządami (art. 43) zagrożone jest karą:",
+                correct: "grzywny, ograniczenia wolności lub pozbawienia wolności do roku",
+                options: ["wyłącznie mandatu karnego", "grzywny, ograniczenia wolności lub pozbawienia wolności do roku", "pozbawienia wolności od lat 5 do 25"],
+                explanations: {
+                    "wyłącznie mandatu karnego": "Błąd! To przestępstwo (występek) z ustawy szczególnej, a nie wykroczenie drogowe.",
+                    "grzywny, ograniczenia wolności lub pozbawienia wolności do roku": "Prawidłowo! Sam fakt dawania/publikowania ogłoszeń (np. w internecie) o sprzedaży nerki podlega karze do roku więzienia.",
+                    "pozbawienia wolności od lat 5 do 25": "Błąd! To zbyt wysoki wymiar kary dla samego rozpowszechniania ogłoszeń."
+                }
+            },
+            {
+                id: 5,
+                question: "Nabywanie lub zbywanie narządu w celu uzyskania korzyści majątkowej (art. 44 ust. 1) podlega karze pozbawienia wolności:",
+                correct: "od 6 miesięcy do 5 lat",
+                options: ["do 30 dni", "od 6 miesięcy do 5 lat", "od roku do 10 lat"],
+                explanations: {
+                    "do 30 dni": "Błąd! To sankcja za drobne wykroczenia, nie za nielegalny handel narządami.",
+                    "od 6 miesięcy do 5 lat": "Prawidłowo! Taki jest podstawowy wymiar kary więzienia za handel komórkami, tkankami lub narządami.",
+                    "od roku do 10 lat": "Błąd! Kara od roku do 10 lat dotyczy sytuacji, gdy sprawca uczynił sobie z tego stałe źródło dochodu."
+                }
+            },
+            {
+                id: 6,
+                question: "Jeżeli sprawca handlu narządami działał w związku z krytycznym położeniem swoim lub osoby najbliższej, sąd:",
+                correct: "może zastosować nadzwyczajne złagodzenie kary lub odstąpić od jej wymierzenia",
+                options: ["musi obligatoryjnie orzec maksymalną karę", "może zastosować nadzwyczajne złagodzenie kary lub odstąpić od jej wymierzenia", "przekazuje sprawę do sądu lekarskiego"],
+                explanations: {
+                    "musi obligatoryjnie orzec maksymalną karę": "Błąd! Ustawa przewiduje klauzulę humanitarną ze względu na stan wyższej konieczności życiowej.",
+                    "może zastosować nadzwyczajne złagodzenie kary lub odstąpić od jej wymierzenia": "Prawidłowo! Art. 44 ust. 2 daje sądowi karnemu możliwość złagodzenia kary lub odstąpienia od niej w sytuacjach krytycznych.",
+                    "przekazuje sprawę do sądu lekarskiego": "Błąd! Sąd powszechny orzeka samodzielnie w sprawach karnych."
+                }
+            },
+            {
+                id: 7,
+                question: "Uczynienie sobie z nielegalnego handlu komórkami, tkankami lub narządami stałego źródła dochodu skutkuje zaostrzeniem kary do:",
+                correct: "od roku do lat 10",
+                options: ["maksymalnie 3 lat", "od roku do lat 10", "bezwzględnego dożywocia"],
+                explanations: {
+                    "maksymalnie 3 lat": "Błąd! Stałe źródło dochodu (profesjonalny czarny rynek) znacznie zaostrza sankcję.",
+                    "od roku do lat 10": "Prawidłowo! Wynika to bezpośrednio z kwalifikowanego typu przestępstwa z art. 44 ust. 3.",
+                    "bezwzględnego dożywocia": "Błąd! Polskie prawo nie przewiduje dożywocia za przestępstwa transplantacyjne."
+                }
+            },
+            {
+                id: 8,
+                question: "Podstawowym warunkiem prawnym pobrania komórek, tkanek lub narządów ze zwłok (ex mortuo) jest:",
+                correct: "stwierdzenie zgonu zgodnie z ustawą o zawodach lekarza i lekarza dentysty",
+                options: ["zgoda ordynatora oddziału intensywnej terapii", "stwierdzenie zgonu zgodnie z ustawą o zawodach lekarza i lekarza dentysty", "pisemny wniosek rodziny zmarłego"],
+                explanations: {
+                    "zgoda ordynatora oddziału...": "Błąd! Procedura stwierdzania zgonu (śmierci mózgu / nieodwracalnego zatrzymania krążenia) jest ściśle sformalizowana w ustawie lekarskiej.",
+                    "stwierdzenie zgonu zgodnie z ustawą o zawodach lekarza i lekarza dentysty": "Prawidłowo! To bezwzględny, medyczno-prawny warunek wstępny.",
+                    "pisemny wniosek rodziny zmarłego": "Błąd! Rodzina w polskim prawie nie musi składać wniosku ani wyrażać zgody (obowiązuje zasada braku sprzeciwu dawcy)."
+                }
+            },
+            {
+                id: 9,
+                question: "Który z poniższych celów NIE uprawnia do pobrania tkanek lub narządów ex mortuo?",
+                correct: "Komercyjna produkcja kosmetyków upiększających",
+                options: ["Leczniczy", "Dydaktyczny i naukowy", "Komercyjna produkcja kosmetyków upiększających"],
+                explanations: {
+                    "Leczniczy": "Błąd! Cel leczniczy (ratowanie życia innego człowieka) to podstawowy powód donacji.",
+                    "Dydaktyczny i naukowy": "Błąd! Ustawa wprost zezwala na pobrania do celów naukowych i dydaktycznych.",
+                    "Komercyjna produkcja kosmetyków upiększających": "Prawidłowo! Wykorzystanie zwłok do celów komercyjno-kosmetycznych bez podstaw prawnych jest niedopuszczalne."
+                }
+            },
+            {
+                id: 10,
+                question: "W polskim prawie transplantacyjnym w odniesieniu do pobrań ze zwłok obowiązuje zasada:",
+                correct: "zgody domniemanej (brak sprzeciwu wyrażonego za życia)",
+                options: ["zgody domniemanej (brak sprzeciwu wyrażonego za życia)", "bezwzględnej zgody rodziny", "wyłącznej decyzji lekarza bez sprawdzania rejestrów"],
+                explanations: {
+                    "zgody domniemanej (brak sprzeciwu wyrażonego za życia)": "Prawidłowo! Każdy zmarły jest potencjalnym dawcą, o ile za życia nie wyraził w ustawowej formie sprzeciwu.",
+                    "bezwzględnej zgody rodziny": "Błąd! Prawo polskie nie przyznaje rodzinie prawa do decydowania o narządach zmarłego (rodzina może jedynie zaświadczyć o woli zmarłego).",
+                    "wyłącznej decyzji lekarza bez sprawdzania rejestrów": "Błąd! Lekarz ma kategoryczny obowiązek sprawdzić, czy zmarły nie złożył sprzeciwu."
+                }
+            },
+            {
+                id: 11,
+                question: "Sprzeciw małoletniego powyżej lat szesnastu na pobranie narządów po śmierci:",
+                correct: "może być wyrażony samodzielnie przez tego małoletniego",
+                options: ["wymaga zawsze potwierdzenia przez oboje rodziców", "może być wyrażony samodzielnie przez tego małoletniego", "jest prawnie bezskuteczny do 18. roku życia"],
+                explanations: {
+                    "wymaga zawsze potwierdzenia...": "Błąd! Małoletni po ukończeniu 16 lat zyskuje w tym zakresie autonomię.",
+                    "może być wyrażony samodzielnie przez tego małoletniego": "Prawidłowo! Ustawa daje małoletniemu powyżej 16 lat prawo do samodzielnego wyrażenia sprzeciwu.",
+                    "jest prawnie bezskuteczny do 18. roku życia": "Błąd! Przepis wyraźnie różnicuje sytuację dzieci młodszych i młodzieży powyżej 16. roku życia."
+                }
+            },
+            {
+                id: 12,
+                question: "Która z poniższych form NIE jest legalną formą wyrażenia sprzeciwu na pobranie narządów ze zwłok?",
+                correct: "Wpis w pamiętniku lub prywatny komentarz w mediach społecznościowych",
+                options: ["Wpis w Centralnym Rejestrze Sprzeciwów", "Oświadczenie ustne w obecności co najmniej dwóch świadków potwierdzone pisemnie", "Wpis w pamiętniku lub prywatny komentarz w mediach społecznościowych"],
+                explanations: {
+                    "Wpis w Centralnym Rejestrze Sprzeciwów": "Błąd! To najbardziej podstawowa, rejestrowa forma sprzeciwu.",
+                    "Oświadczenie ustne w obecności co najmniej dwóch świadków potwierdzone pisemnie": "Błąd! To w pełni legalna i przewidziana ustawą forma oświadczenia woli.",
+                    "Wpis w pamiętniku lub prywatny komentarz w mediach społecznościowych": "Prawidłowo! Prywatne zapiski lub posty w internecie nie spełniają rygorystycznych wymogów trzech form wskazanych w ustawie transplantacyjnej."
+                }
+            },
+            {
+                id: 13,
+                question: "W przypadku uzasadnionego podejrzenia, że zgon nastąpił w wyniku czynu zabronionego (przestępstwa), pobranie wymaga:",
+                correct: "uzyskania informacji od prokuratora, że nie wyraża sprzeciwu",
+                options: ["pisemnej zgody Ministra Sprawiedliwości", "uzyskania informacji od prokuratora, że nie wyraża sprzeciwu", "bezwzględnego przeprowadzenia pełnej sekcji zwłok przed pobraniem narządów"],
+                explanations: {
+                    "pisemnej zgody Ministra Sprawiedliwości": "Błąd! Kompetencja ta leży na poziomie prokuratora prowadzącego postępowanie, a nie ministra.",
+                    "uzyskania informacji od prokuratora, że nie wyraża sprzeciwu": "Prawidłowo! Stanowi o tym wprost procedura karna zsynchronizowana z ustawą transplantacyjną.",
+                    "bezwzględnego przeprowadzenia pełnej sekcji zwłok...": "Błąd! Pobranie narządów do przeszczepu musi nastąpić natychmiast po stwierdzeniu śmierci mózgu, przed sekcją sądowo-lekarską."
+                }
+            },
+            {
+                id: 14,
+                question: "Centralny Rejestr Sprzeciwów (CRS) prowadzony jest przez:",
+                correct: "Centrum Organizacyjno-Koordynacyjne ds. Transplantacji „Poltransplant”",
+                options: ["Krajowe Centrum Bankowania Tkanek i Komórek", "Centrum Organizacyjno-Koordynacyjne ds. Transplantacji „Poltransplant”", "Urząd Wojewódzki właściwy dla stolicy państwa"],
+                explanations: {
+                    "Krajowe Centrum Bankowania...": "Błąd! KCBTiK prowadzi rejestr banków tkanek, a nie sprzeciwów personalnych.",
+                    "Centrum Organizacyjno-Koordynacyjne ds. Transplantacji „Poltransplant”": "Prawidłowo! Poltransplant ma ustawowe zadanie prowadzenia rejestru centralnego sprzeciwów.",
+                    "Urząd Wojewódzki...": "Błąd! Rejestr ma charakter ogólnokrajowy i jest powierzony wyspecjalizowanej agendzie medycznej."
+                }
+            },
+            {
+                id: 15,
+                question: "Dane osoby, która zgłosiła sprzeciw w CRS, są przechowywane po jej śmierci przez okres:",
+                correct: "5 lat",
+                options: ["1 roku", "5 lat", "20 lat (zgodnie z dokumentacją medyczną)"],
+                explanations: {
+                    "1 roku": "Błąd! Zbyt krótki okres archiwizacji dla celów weryfikacji postępowań.",
+                    "5 lat": "Prawidłowo! Ustawa nakazuje przechowywanie danych przez 5 lat od dnia śmierci osoby, a po tym czasie ich trwałe zniszczenie.",
+                    "20 lat...": "Błąd! Ogólne zasady dokumentacji medycznej nie mają zastosowania do Centralnego Rejestru Sprzeciwów."
+                }
+            },
+            {
+                id: 16,
+                question: "Informacji o tym, czy sprzeciw danej osoby figuruje w rejestrze centralnym, udziela się lekarzowi zamierzającemu dokonać pobrania:",
+                correct: "niezwłocznie po otrzymaniu pytania",
+                options: ["w terminie 14 dni roboczych", "niezwłocznie po otrzymaniu pytania", "wyłącznie drogą pisemną za potwierdzeniem odbioru w ciągu miesiąca"],
+                explanations: {
+                    "w terminie 14 dni roboczych": "Błąd! Przy pobraniu narządów ex mortuo liczą się minuty i godziny — procedury administracyjne nie mogą blokować procesu.",
+                    "niezwłocznie po otrzymaniu pytania": "Prawidłowo! Udzielenie informacji musi nastąpić natychmiast (niezwłocznie), zazwyczaj teleinformatycznie.",
+                    "wyłącznie drogą pisemną...": "Błąd! Forma pisemna papierowa zablokowałaby możliwość dokonania jakiegokolwiek przeszczepu wielonarządowego."
+                }
+            },
+            {
+                id: 17,
+                question: "Czy lekarz, który stwierdził zgon pacjenta (śmierć mózgu), może osobiście brać udział w operacji pobrania lub przeszczepienia narządów od tego zmarłego?",
+                correct: "nie, istnieje bezwzględny zakaz łączenia tych ról",
+                options: ["tak, pod warunkiem posiadania specjalizacji z transplantologii", "nie, istnieje bezwzględny zakaz łączenia tych ról", "tak, jeśli wyrazi na to zgodę rodzina pacjenta"],
+                explanations: {
+                    "tak, pod warunkiem...": "Błąd! Zakaz ma charakter bezwzględny i ma na celu eliminację konfliktu interesów oraz ochronę etyczną personelu.",
+                    "nie, istnieje bezwzględny zakaz łączenia tych ról": "Prawidłowo! Lekarz stwierdzający zgon jest kategorycznie wyłączony z zespołu pobierającego i przeszczepiającego.",
+                    "tak, jeśli wyrazi na to zgodę rodzina...": "Błąd! Przepis ustawy chroni obiektywizm procedury i żadna zgoda stron nie może go uchylić."
+                }
+            },
+            {
+                id: 18,
+                question: "Pobranie komórek, tkanek lub narządów od żywego dawcy (ex vivo) na rzecz osoby niespokrewnionej (np. kandydata ze szczególnych względów osobistych) wymaga:",
+                correct: "zgody sądu rejonowego i opinii Komisji Etycznej Krajowej Rady Transplantacyjnej",
+                options: ["wyłącznie zgody ordynatora", "zgody sądu rejonowego i opinii Komisji Etycznej Krajowej Rady Transplantacyjnej", "zgody prokuratora rejonowego"],
+                explanations: {
+                    "wyłącznie zgody ordynatora": "Błąd! Pobranie narządu nieodnawialnego (np. nerki) od żywej osoby niespokrewnionej podlega ścisłej kontroli sądowej.",
+                    "zgody sądu rejonowego i opinii Komisji Etycznej Krajowej Rady Transplantacyjnej": "Prawidłowo! Sąd rejonowy (w postępowaniu nieprocesowym) wydaje zgodę po zapoznaniu się z opinią Komisji Etycznej.",
+                    "zgody prokuratora rejonowego": "Błąd! Prokurator nie wydaje zgód w sprawach pobrań ex vivo."
+                }
+            },
+            {
+                id: 19,
+                question: "Wymóg uzyskania zgody sądu na pobranie od żywego dawcy na rzecz osoby niespokrewnionej NIE dotyczy:",
+                correct: "szpiku i innych regenerujących się komórek lub tkanek",
+                options: ["jednej z nerek", "płata wątroby", "szpiku i innych regenerujących się komórek lub tkanek"],
+                explanations: {
+                    "jednej z nerek": "Błąd! Nerka to narząd nieodnawialny, zgoda sądu przy braku pokrewieństwa jest konieczna.",
+                    "płata wątroby": "Błąd! Pobranie fragmentu wątroby od żywego dawcy niespokrewnionego również wymaga procedury sądowej.",
+                    "szpiku i innych regenerujących się komórek lub tkanek": "Prawidłowo! Pobranie szpiku kostnego i komórek macierzystych od dawców niespokrewnionych (rejestrowych) jest zwolnione z procedury sądowej."
+                }
+            },
+            {
+                id: 20,
+                question: "Przed wyrażeniem zgody, kandydat na dawcę żywego musi być szczegółowo, pisemnie poinformowany o ryzyku i następstwach przez:",
+                correct: "lekarza wykonującego zabieg oraz innego lekarza niebiorącego bezpośredniego udziału w operacji",
+                options: ["lekarza wykonującego zabieg oraz innego lekarza niebiorącego bezpośredniego udziału w operacji", "wyłącznie przez dyrektora szpitala", "pielęgniarkę oddziałową w obecności psychologa"],
+                explanations: {
+                    "lekarza wykonującego zabieg oraz innego lekarza niebiorącego bezpośredniego udziału w operacji": "Prawidłowo! Wymóg informacji przez dwóch lekarzy (w tym jednego niezależnego) to kluczowe zabezpieczenie ustawowe praw dawcy.",
+                    "wyłącznie przez dyrektora szpitala": "Błąd! Dyrektor pełni funkcję administracyjną, a informacja musi mieć charakter czysto medyczny.",
+                    "pielęgniarkę oddziałową w obecności psychologa": "Błąd! Informowanie o ryzyku chirurgiczno-medycznym operacji leży w gestii lekarzy operatorów."
+                }
+            },
+            {
+                id: 21,
+                question: "Kobieta ciężarna może być kandydatem na dawcę żywego wyłącznie w odniesieniu do:",
+                correct: "komórek i tkanek (np. krew pępowinowa)",
+                options: ["narządów nieparzystych", "segmentu wątroby w sytuacji wyższej konieczności", "komórek i tkanek (np. krew pępowinowa)"],
+                explanations: {
+                    "narządów nieparzystych": "Błąd! Pobranie narządu nieparzystego (np. serca) od żywej osoby to zabójstwo.",
+                    "segmentu wątroby w sytuacji...": "Błąd! Ciężarna nie może oddawać narządów ani ich fragmentów ze względu na bezpieczeństwo płodu.",
+                    "komórek i tkanek (np. krew pępowinowa)": "Prawidłowo! Ciężarna może oddać wyłącznie komórki lub tkanki, a ryzyko ocenia się wspólnie z ginekologiem i neonatologiem."
+                }
+            },
+            {
+                id: 22,
+                question: "Czy dopuszczalne jest pobranie szpiku na rzecz rodzeństwa od małoletniego, który nie posiada zdolności do czynności prawnych?",
+                correct: "tak, w przypadku bezpośredniego zagrożenia życia rodzeństwa, za zgodą rodziców i sądu opiekuńczego",
+                options: ["nie, polskie prawo bezwzględnie zakazuje pobrań od dzieci do 18. roku życia", "tak, wystarczy wyłączna decyzja lekarza prowadzącego i ordynatora", "tak, w przypadku bezpośredniego zagrożenia życia rodzeństwa, za zgodą rodziców i sądu opiekuńczego"],
+                explanations: {
+                    "nie, polskie prawo bezwzględnie zakazuje...": "Błąd! Istnieje rygorystyczny wyjątek ratujący życie rodzeństwa.",
+                    "tak, wystarczy wyłączna decyzja lekarza...": "Błąd! Wymagana jest pełna procedura z udziałem przedstawicieli ustawowych oraz sądu.",
+                    "tak, w przypadku bezpośredniego zagrożenia życia rodzeństwa, za zgodą rodziców i sądu opiekuńczego": "Prawidłowo! To jedyny legalny wyjątek pobrania szpiku od małoletniego ex vivo, pod warunkiem braku upośledzenia organizmu dawcy."
+                }
+            },
+            {
+                id: 23,
+                question: "W przypadku gdy dawcą szpiku ma być małoletni powyżej lat trzynastu, oprócz zgody rodziców i sądu wymagana jest:",
+                correct: "także zgoda tego małoletniego",
+                options: ["zgoda Ministra Zdrowia", "także zgoda tego małoletniego", "wyłącznie opinia szkolnego pedagoga"],
+                explanations: {
+                    "zgoda Ministra Zdrowia": "Błąd! Minister nie zatwierdza indywidualnych zgód pacjentów.",
+                    "także zgoda tego małoletniego": "Prawidłowo! Małoletni powyżej 13. roku życia posiada ograniczoną zdolność do czynności prawnych i jego sprzeciw blokuje procedurę.",
+                    "wyłącznie opinia szkolnego pedagoga": "Błąd! Pedagog nie bierze udziału w konstytuowaniu zgody medycznej przeszczepu."
+                }
+            },
+            {
+                id: 24,
+                question: "Sąd opiekuńczy rozpoznaje wniosek o pobranie szpiku od małoletniego w terminie:",
+                correct: "7 dni",
+                options: ["24 godzin", "7 dni", "3 miesięcy"],
+                explanations: {
+                    "24 godzin": "Błąd! Zbyt krótki czas na przesłuchanie i powołanie biegłego psychologa.",
+                    "7 dni": "Prawidłowo! Ustawa nakłada na sąd opiekuńczy przyspieszony, 7-dniowy termin na rozpoznanie wniosku ze względu na stan zdrowia biorcy.",
+                    "3 miesięcy": "Błąd! Standardowy termin nieprocesowy zagroziłby życiu chorego rodzeństwa."
+                }
+            },
+            {
+                id: 25,
+                question: "Pobieranie lub przeszczepianie komórek, tkanek lub narządów bez wymaganego pozwolenia (art. 46 ust. 1) zagrożone jest karą:",
+                correct: "grzywny, ograniczenia wolności lub pozbawienia wolności do lat 3",
+                options: ["wyłącznie nagany ze strony izby lekarskiej", "grzywny, ograniczenia wolności lub pozbawienia wolności do lat 3", "pozbawienia wolności do lat 15"],
+                explanations: {
+                    "wyłącznie nagany...": "Błąd! To przestępstwo karne powszechne, a nie tylko przewinienie zawodowe.",
+                    "grzywny, ograniczenia wolności lub pozbawienia wolności do lat 3": "Prawidłowo! Taki wymiar kary przewiduje ustawa dla osób łamiących reżim pozwoleń transplantacyjnych.",
+                    "pozbawienia wolności do lat 15": "Błąd! Górna granica za typ podstawowy bez pozwolenia wynosi 3 lata."
+                }
+            },
+            {
+                id: 26,
+                question: "Jeżeli kierownik szpitala wie o nielegalnym pobieraniu narządów w jego placówce i nie podejmie działań (art. 46 ust. 2), podlega karze:",
+                correct: "pozbawienia wolności do lat 3",
+                options: ["wyłącznie kary dyscyplinarnej potrącenia pensji", "pozbawienia wolności do lat 3", "nie podlega żadnej odpowiedzialności karnej personalnej"],
+                explanations: {
+                    "wyłącznie kary dyscyplinarnej...": "Błąd! Ustawa nakłada na kierownika szczególny prawnokarny obowiązek nadzoru.",
+                    "pozbawienia wolności do lat 3": "Prawidłowo! Niedopełnienie obowiązku nadzoru i dopuszczenie do procederu bez pozwolenia to przestępstwo zagrożone więzieniem do lat 3.",
+                    "nie podlega żadnej odpowiedzialności...": "Błąd! Odpowiedzialność karna kadry zarządzającej jest wprost zapisana w art. 46."
+                }
+            },
+            {
+                id: 27,
+                question: "Rejestr żywych dawców narządów, zbierający dane w celu monitorowania ich stanu zdrowia w przyszłości, prowadzony jest przez:",
+                correct: "POLTRANSPLANT",
+                options: ["NFZ", "POLTRANSPLANT", "Główny Urząd Statystyczny"],
+                explanations: {
+                    "NFZ": "Błąd! NFZ nie gromadzi danych monitoringu klinicznego dawców w tym rejestrze.",
+                    "POLTRANSPLANT": "Prawidłowo! Poltransplant ma ustawowy obowiązek prowadzenia rejestru żywych dawców narządów.",
+                    "Główny Urząd Statystyczny": "Błąd! GUS zbiera dane statystyczne, nie kliniczne i medyczne dawców."
+                }
+            },
+            {
+                id: 28,
+                question: "Kto prowadzi Rejestr banków tkanek i komórek w Polsce?",
+                correct: "Krajowe Centrum Bankowania Tkanek i Komórek",
+                options: ["Naczelna Izba Pielęgniarek", "POLTRANSPLANT", "Krajowe Centrum Bankowania Tkanek i Komórek"],
+                explanations: {
+                    "Naczelna Izba Pielęgniarek": "Błąd! Izba prowadzi rejestry samorządowe personelu.",
+                    "POLTRANSPLANT": "Błąd! Poltransplant prowadzi rejestry narządów i sprzeciwów.",
+                    "Krajowe Centrum Bankowania Tkanek i Komórek": "Prawidłowo! To jest statutowe zadanie KCBTiK zlokalizowanego w Warszawie."
+                }
+            },
+            {
+                id: 29,
+                question: "Ośrodki dawców szpiku (pozyskujące dawców niespokrewnionych allogenicznych) mogą być prowadzone przez podmioty lecznicze lub fundacje po uzyskaniu pozwolenia:",
+                correct: "Ministra Zdrowia",
+                options: ["Prezesa NFZ", "Ministra Zdrowia", "Starosty Powiatowego"],
+                explanations: {
+                    "Prezesa NFZ": "Błąd! Płatnik nie wydaje pozwoleń na prowadzenie banków i ośrodków dawców.",
+                    "Ministra Zdrowia": "Prawidłowo! Pozwolenie ministra właściwego do spraw zdrowia jest warunkiem koniecznym działalności takiego ośrodka.",
+                    "Starosty Powiatowego": "Błąd! Kompetencja wykracza daleko poza poziom samorządu powiatowego."
+                }
+            },
+            {
+                id: 30,
+                question: "Podstawowym zadaniem ośrodków kwalifikujących funkcjonujących przy szpitalach transplantacyjnych jest:",
+                correct: "rejestracja potencjalnych biorców i prowadzenie zespołu kwalifikacyjnego",
+                options: ["sprzedaż zagraniczna pobranych komórek macierzystych", "rejestracja potencjalnych biorców i prowadzenie zespołu kwalifikacyjnego", "prowadzenie sekcji zwłok sądowo-lekarskich"],
+                explanations: {
+                    "sprzedaż zagraniczna...": "Błąd! Obrót komórkami ma charakter czysto medyczny i niekomercyjny.",
+                    "rejestracja potencjalnych biorców i prowadzenie zespołu kwalifikacyjnego": "Prawidłowo! Ośrodek ten tworzy strukturę lekarzy odpowiedzialnych za ostateczne dopuszczenie biorcy do operacji.",
+                    "prowadzenie sekcji zwłok...": "Błąd! Tym zajmują się zakłady medycyny sądowej."
+                }
+            },
+            {
+                id: 31,
+                question: "W skład lekarskiego zespołu kwalifikującego biorców w ośrodku musi wchodzić co najmniej jeden specjalista z zakresu:",
+                correct: "transplantologii klinicznej",
+                options: ["medycyny sądowej", "transplantologii klinicznej", "zdrowia publicznego lub epidemiologii"],
+                explanations: {
+                    "medycyny sądowej": "Błąd! Specjalista medycyny sądowej nie kwalifikuje żywych biorców do przeszczepów.",
+                    "transplantologii klinicznej": "Prawidłowo! Ustawa wymaga bezwzględnie udziału jednego lekarza specjalisty z transplantologii klinicznej.",
+                    "zdrowia publicznego...": "Błąd! Kwalifikacja ma charakter ściśle kliniczno-zabiegowy, nie administracyjny."
+                }
+            },
+            {
+                id: 32,
+                question: "Oprócz transplantologa, drugim członkiem zespołu kwalifikacyjnego musi być specjalista z dziedziny zabiegowej/klinicznej dostosowanej do narządu, np.:",
+                correct: "chirurgii, kardiochirurgii, urologii lub hematologii",
+                options: ["chirurgii, kardiochirurgii, urologii lub hematologii", "okulistyki lub dermatologii", "rehabilitacji medycznej lub balneologii"],
+                explanations: {
+                    "chirurgii, kardiochirurgii, urologii lub hematologii": "Prawidłowo! Wykład wymienia precyzyjnie te specjalizacje lekarskie (w zależności od typu przeszczepianego narządu/szpiku).",
+                    "okulistyki lub dermatologii": "Błąd! Specjalizacje te nie pasują do zespołu kwalifikującego główne przeszczepy narządowe (chyba że chodzi o rogówkę, ale ustawa wymienia w zespole chirurgów ogólnych/naczyniowych itp.).",
+                    "rehabilitacji medycznej...": "Błąd! To specjaliści opieki pooperacyjnej, nie kwalifikacji do samego zabiegu."
+                }
+            },
+            {
+                id: 33,
+                question: "Zgłoszenia potencjalnego biorcy na Krajową listę osób oczekujących na przeszczepienie dokonuje:",
+                correct: "lekarz kierujący zespołem kwalifikacyjnym",
+                options: ["sam pacjent osobiście przez internetowy portal pacjenta", "lekarz kierujący zespołem kwalifikacyjnym", "pielęgniarka koordynująca oddziału nefrologii"],
+                explanations: {
+                    "sam pacjent osobiście...": "Błąd! Pacjent nie ma kompetencji medycznych do samodzielnego zgłoszenia się na listę aktywną.",
+                    "lekarz kierujący zespołem kwalifikacyjnym": "Prawidłowo! To zadanie i odpowiedzialność lekarza szefa zespołu kwalifikacyjnego.",
+                    "pielęgniarka koordynująca...": "Błąd! Koordynator transplantacyjny wspiera proces, ale formalne zgłoszenie autoryzuje lekarz."
+                }
+            },
+            {
+                id: 34,
+                question: "Warunkiem koniecznym (sine qua non) otrzymania przeszczepu narządu od dawcy zmarłego w Polsce jest:",
+                correct: "umieszczenie na Krajowej liście osób oczekujących (KLO)",
+                options: ["posiadanie dodatkowego ubezpieczenia komercyjnego", "umieszczenie na Krajowej liście osób oczekujących (KLO)", "pisemna rekomendacja od Wojewody"],
+                explanations: {
+                    "posiadanie dodatkowego...": "Błąd! System opiera się na kryteriach medycznych i finansowaniu publicznym, bez barier komercyjnych.",
+                    "umieszczenie na Krajowej liście osób oczekujących (KLO)": "Prawidłowo! Wykład wskazuje: 'Umieszczenie na liście jest warunkiem otrzymania przeszczepu'.",
+                    "pisemna rekomendacja od Wojewody": "Błąd! Urzędnicy administracji rządowej nie uczestniczą w alokacji narządów."
+                }
+            },
+            {
+                id: 35,
+                question: "Wybór konkretnego biorcy z listy oczekujących do danego pobranego narządu dokonywany jest wyłącznie na podstawie:",
+                correct: "kryteriów medycznych określonych w rozporządzeniu MZ",
+                options: ["kolejności zgłoszeń (kto pierwszy, ten lepszy)", "kryteriów medycznych określonych w rozporządzeniu MZ", "decyzji rady nadzorczej Poltransplantu"],
+                explanations: {
+                    "kolejności zgłoszeń...": "Błąd! Alokacja zależy od zgodności tkankowej, pilności i dopasowania antropometrycznego, a nie tylko czasu czekania.",
+                    "kryteriów medycznych określonych w rozporządzeniu MZ": "Prawidłowo! Kryteria medyczne (wprost wskazane w rozporządzeniu) determinują algorytm doboru pary dawca-biorca.",
+                    "decyzji rady nadzorczej...": "Błąd! Rada nadzorcza pełni funkcje zarządcze, dobór pacjentów to proces czysto medyczno-komputerowy."
+                }
+            },
+            {
+                id: 36,
+                question: "Krajową listę osób oczekujących na przeszczepienie (KLO) prowadzi:",
+                correct: "POLTRANSPLANT",
+                options: ["POLTRANSPLANT", "Krajowe Centrum Bankowania Tkanek", "Ministerstwo Zdrowia (Departament Ochrony Zdrowia)"],
+                explanations: {
+                    "POLTRANSPLANT": "Prawidłowo! Poltransplant agreguje i prowadzi krajową listę KLO w trybie ciągłym.",
+                    "Krajowe Centrum Bankowania...": "Błąd! KCBTiK nie odpowiada za listy biorców narządów.",
+                    "Ministerstwo Zdrowia...": "Błąd! Ministerstwo nadzoruje agendę, ale baza techniczna leży w Poltransplancie."
+                }
+            },
+            {
+                id: 37,
+                question: "W celu monitorowania odległych skutków klinicznych przeszczepów, Poltransplant zbiera dane o przeżyciu biorcy i narządu w okresach:",
+                correct: "3 i 12 miesięcy po zabiegu, a następnie co 12 miesięcy",
+                options: ["tylko przez pierwsze 24 godziny po operacji", "3 i 12 miesięcy po zabiegu, a następnie co 12 miesięcy", "bezwzględnie co miesiąc przez całe życie pacjenta"],
+                explanations: {
+                    "tylko przez pierwsze 24 godziny...": "Błąd! To zbyt krótki czas, uniemożliwiający ocenę odrzucania przewlekłego.",
+                    "3 i 12 miesięcy po zabiegu, a następnie co 12 miesięcy": "Prawidłowo! Taki harmonogram sprawozdawczy do Krajowego Rejestru Przeszczepień (KRP) nakłada ustawa.",
+                    "bezwzględnie co miesiąc...": "Błąd! Byłoby to zbyt obciążające biurokratycznie; monitoring standardowy odbywa się w interwałach rocznych (po pierwszym roku)."
+                }
+            },
+            {
+                id: 38,
+                question: "Monitorowaniem dokonywanych przeszczepień (przeżywalność narządów) zajmuje się rejestr o nazwie:",
+                correct: "Krajowy Rejestr Przeszczepień (KRP)",
+                options: ["Krajowy Rejestr Przeszczepień (KRP)", "Centralny Rejestr Sprzeciwów", "Centralny Rejestr Żywych Dawców"],
+                explanations: {
+                    "Krajowy Rejestr Przeszczepień (KRP)": "Prawidłowo! KRP gromadzi dane o efektach terapeutycznych dokonanych operacji.",
+                    "Centralny Rejestr Sprzeciwów": "Błąd! Ten rejestr zawiera dane osób odmawiających pobrania ex mortuo.",
+                    "Centralny Rejestr Żywych Dawców": "Błąd! Rejestr żywych dawców monitoruje stan zdrowia osób oddających narząd, a KRP monitoruje sam fakt i efekty przeszczepu."
+                }
+            },
+            {
+                id: 39,
+                question: "Pobieranie komórek, tkanek i narządów od ŻYWYCH dawców może być prowadzone:",
+                correct: "wyłącznie w podmiotach leczniczych",
+                options: ["w podmiotach leczniczych oraz zakładach pogrzebowych", "wyłącznie w podmiotach leczniczych", "w dowolnym laboratorium analitycznym"],
+                explanations: {
+                    "w podmiotach leczniczych oraz zakładach...": "Błąd! Pobranie od żywego człowieka w zakładzie pogrzebowym to absurd prawny i zbrodnia.",
+                    "wyłącznie w podmiotach leczniczych": "Prawidłowo! Ze względu na bezpieczeństwo dawcy operacja ex vivo dopuszczalna jest tylko w szpitalu (podmiocie leczniczym).",
+                    "w dowolnym laboratorium...": "Błąd! Laboratoria mogą badać krew, ale nie pobierają operacyjnie tkanek i narządów."
+                }
+            },
+            {
+                id: 40,
+                question: "Pobieranie NARZĄDÓW ze ZWŁOK ludzkich w celu ich przeszczepienia może być prowadzone:",
+                correct: "wyłącznie w podmiotach leczniczych (szpitalach)",
+                options: ["w każdym prosektorium miejskim i u fryzjera", "wyłącznie w podmiotach leczniczych (szpitalach)", "wyłącznie w bankach tkanek w Warszawie"],
+                explanations: {
+                    "w każdym prosektorium miejskim...": "Błąd! Pobranie narządów (np. serca, nerek) wymaga bloku operacyjnego i utrzymania krążenia obwodowego dawcy ze śmiercią mózgu.",
+                    "wyłącznie w podmiotach leczniczych (szpitalach)": "Prawidłowo! Narządy pobiera się na salach operacyjnych szpitali, w których leżał pacjent zmarły.",
+                    "wyłącznie w bankach tkanek...": "Błąd! Banki tkanek przetwarzają i przechowują, ale nie pobierają bezpośrednio całych narządów ze zwłok w terenie."
+                }
+            },
+            {
+                id: 41,
+                question: "Gdzie dopuszczalne jest pobieranie KOMÓREK I TKANEK (np. skóra, rogówka, kości) ze zwłok ludzkich?",
+                correct: "w podmiotach leczniczych, zakładach medycyny sądowej, patomorfologii oraz zakładach pogrzebowych posiadających salę sekcyjną",
+                options: ["wyłącznie na bloku operacyjnym szpitala uniwersyteckiego", "w podmiotach leczniczych, zakładach medycyny sądowej, patomorfologii oraz zakładach pogrzebowych posiadających salę sekcyjną", "w dowolnym miejscu wskazanym przez rodzinę zmarłego"],
+                explanations: {
+                    "wyłącznie na bloku operacyjnym...": "Błąd! Tkanki (w przeciwieństwie do narządów) można pobrać w szerszym spektrum miejsc po zatrzymaniu krążenia.",
+                    "w podmiotach leczniczych, zakładach medycyny sądowej, patomorfologii oraz zakładach pogrzebowych posiadających salę sekcyjną": "Prawidłowo! Ustawa transplantacyjna zezwala na pobranie tkanek w tych czterech typach lokalizacji, pod warunkiem posiadania sali sekcyjnej.",
+                    "w dowolnym miejscu wskazanym...": "Błąd! Muszą być zachowane ścisłe warunki sanitarne i infrastrukturalne."
+                }
+            },
+            {
+                id: 42,
+                question: "Przechowywanie pobranych narządów przed ich wszczepieniem może być prowadzone:",
+                correct: "wyłącznie w podmiotach leczniczych wykonujących przeszczepienia",
+                options: ["w dowolnym banku komórek macierzystych", "wyłącznie w podmiotach leczniczych wykonujących przeszczepienia", "w chłodniach stacji krwiodawstwa RCKiK"],
+                explanations: {
+                    "w dowolnym banku...": "Błąd! Banki komórek przechowują zamrożone komórki (np. szpik), a narządy (np. serce, wątroba) wymagają natychmiastowego transportu i płynów konserwujących w ośrodku wszczepiającym.",
+                    "wyłącznie w podmiotach leczniczych wykonujących przeszczepienia": "Prawidłowo! Narządy przechowuje się w ośrodku docelowym w ramach procedury transplantacji.",
+                    "w chłodniach stacji krwiodawstwa...": "Błąd! RCKiK zajmuje się wyłącznie krwią i jej składnikami."
+                }
+            },
+            {
+                id: 43,
+                question: "Samo przeszczepianie (wszczepienie biorcy) narządów lub zastosowanie tkanek u ludzi prowadzone jest:",
+                correct: "wyłącznie w podmiotach leczniczych",
+                options: ["wyłącznie w podmiotach leczniczych", "w gabinetach medycyny estetycznej bez statusu podmiotu leczniczego", "w laboratoriach diagnostycznych sieci komercyjnych"],
+                explanations: {
+                    "wyłącznie w podmiotach leczniczych": "Prawidłowo! Wszczepienie to zaawansowana procedura chirurgiczno-kliniczna, dopuszczalna tylko w szpitalu posiadającym pozwolenie MZ.",
+                    "w gabinetach medycyny estetycznej...": "Błąd! Brak statusu podmiotu leczniczego i pozwolenia MZ wyklucza legalność takich działań.",
+                    "w laboratoriach diagnostycznych...": "Błąd! Laboratoria wykonują testy in vitro, nie operują pacjentów."
+                }
+            },
+            {
+                id: 44,
+                question: "Aby szpital mógł legalnie pobierać od żywych dawców, przechowywać i przeszczepiać narządy, musi posiadać pozwolenie wydane przez:",
+                correct: "Ministra Zdrowia",
+                options: ["Głównego Inspektora Sanitarnego", "Ministra Zdrowia", "Naczelną Radę Lekarską"],
+                explanations: {
+                    "Głównego Inspektora Sanitarnego": "Błąd! GIS kontroluje warunki higieniczno-sanitarne, pozwolenia ustrojowe wydaje minister.",
+                    "Ministra Zdrowia": "Prawidłowo! Pozwolenie MZ (wydawane na wniosek po opiniach pomocniczych) konstytuuje legalność ośrodka transplantacyjnego.",
+                    "Naczelną Radę Lekarską": "Błąd! Samorząd lekarski nie wydaje pozwoleń na działalność szpitali."
+                }
+            },
+            {
+                id: 45,
+                question: "Siedziba Centrum Organizacyjno-Koordynacyjnego do Spraw Transplantacji „POLTRANSPLANT” znajduje się w:",
+                correct: "Warszawie",
+                options: ["Gdańsku", "Krakowie", "Warszawie"],
+                explanations: {
+                    "Gdańsku": "Błąd! W Gdańsku są ośrodki transplantacyjne, ale nie centrala państwowa.",
+                    "Krakowie": "Błąd! Siedziba agendy centralnej mieści się w stolicy.",
+                    "Warszawie": "Prawidłowo! Poltransplant ma swoją siedzibę w Warszawie."
+                }
+            },
+            {
+                id: 46,
+                question: "Do podstawowych zadań Poltransplantu (art. 38) NIE należy:",
+                correct: "Merytoryczna kontrola laboratoriów produkujących implanty stomatologiczne",
+                options: ["Koordynacja pobierania i przeszczepiania narządów na terenie kraju", "Prowadzenie Centralnego Rejestru Sprzeciwów", "Merytoryczna kontrola laboratoriów produkujących implanty stomatologiczne"],
+                explanations: {
+                    "Koordynacja pobierania i przeszczepiania...": "Błąd! To główne, codzienne zadanie koordynacyjne Poltransplantu.",
+                    "Prowadzenie Centralnego Rejestru Sprzeciwów": "Błąd! Rejestr sprzeciwów jest bezpośrednio prowadzony przez ten podmiot.",
+                    "Merytoryczna kontrola laboratoriów produkujących implanty stomatologiczne": "Prawidłowo! Kontrola implantów stomatologicznych lub komercyjnych nie wchodzi w zakres zadań Poltransplantu (leży w gestii URPL lub inspekcji farmaceutycznych/tkanek)."
+                }
+            },
+            {
+                id: 47,
+                question: "Koordynacja poszukiwania niespokrewnionych dawców szpiku i komórek krwiotwórczych z rejestrów zagranicznych to zadanie:",
+                correct: "POLTRANSPLANTU",
+                options: ["POLTRANSPLANTU", "Krajowego Centrum Krwiodawstwa i Krwiolecznictwa", "Wojewódzkich Stacji Sanitarno-Epidemiologicznych (WSSE)"],
+                explanations: {
+                    "POLTRANSPLANTU": "Prawidłowo! Poltransplant koordynuje poszukiwania dawców niespokrewnionych w bazach krajowych i międzynarodowych (BMDW).",
+                    "Krajowego Centrum Krwiodawstwa...": "Błąd! KCKiK odpowiada za krwiolecznictwo, a nie transplantacje szpiku od dawców niespokrewnionych.",
+                    "Wojewódzkich Stacji...": "Błąd! Sanepid nie zajmuje się procedurami transplantacyjnymi szpiku."
+                }
+            },
+            {
+                id: 48,
+                question: "Prowadzenie działalności edukacyjnej promującej leczenie metodą przeszczepiania narządów i tkanek to ustawowe zadanie:",
+                correct: "POLTRANSPLANTU",
+                options: ["wyłącznie uniwersytetów trzeciego wieku", "POLTRANSPLANTU", "Zarządu Głównego Polskiego Czerwonego Krzyża (PCK)"],
+                explanations: {
+                    "wyłącznie uniwersytetów...": "Błąd! Podmioty te prowadzą wykłady, ale nie mają zadań ustawowych w tym zakresie.",
+                    "POLTRANSPLANTU": "Prawidłowo! Ustawa wprost nakłada na Poltransplant obowiązek edukacji i upowszechniania wiedzy o transplantologii.",
+                    "Zarządu Głównego PCK": "Błąd! PCK promuje krwiodawstwo, ale rejestry i oficjalną promocję transplantacji narządów koordynuje Poltransplant."
+                }
+            },
+            {
+                id: 49,
+                question: "Krajowe Centrum Bankowania Tkanek i Komórek (KCBTiK) ma swoją siedzibę w:",
+                correct: "Warszawie",
+                options: ["Katowicach", "Warszawie", "Poznaniu"],
+                explanations: {
+                    "Katowicach": "Błąd! Siedziba instytucji referencyjnej znajduje się w stolicy.",
+                    "Warszawie": "Prawidłowo! Centrala KCBTiK zlokalizowana jest w Warszawie.",
+                    "Poznaniu": "Błąd! Wykład wskazuje na Warszawę jako miejsce siedziby."
+                }
+            },
+            {
+                id: 50,
+                question: "Głównym zadaniem Krajowego Centrum Bankowania Tkanek i Komórek (art. 39) jest:",
+                correct: "sprawowanie nadzoru i kontroli merytorycznej nad bankami tkanek i komórek",
+                options: ["organizowanie transportu lotniczego dla przeszczepów serca", "sprawowanie nadzoru i kontroli merytorycznej nad bankami tkanek i komórek", "prowadzenie rejestru lekarzy chirurgów plastycznych"],
+                explanations: {
+                    "organizowanie transportu lotniczego...": "Błąd! Koordynacją logistyczną i transportem narządów (w tym serca) zajmuje się Poltransplant.",
+                    "sprawowanie nadzoru i kontroli merytorycznej nad bankami tkanek i komórek": "Prawidłowo! KCBTiK to jednostka nadrzędna i kontrolna dla wszystkich banków tkanek w kraju.",
+                    "prowadzenie rejestru lekarzy...": "Błąd! Rejestry lekarzy prowadzi Naczelna Izba Lekarska."
+                }
+            },
+            {
+                id: 51,
+                question: "Funkcje referencyjne i konsultacyjne w zakresie procedur obróbki i przechowywania tkanek ludzkich pełni w Polsce:",
+                correct: "Krajowe Centrum Bankowania Tkanek i Komórek",
+                options: ["Wojewódzki Konsultant ds. Dermatologii", "Krajowe Centrum Bankowania Tkanek i Komórek", "Główny Inspektor Farmaceutyczny (GIF)"],
+                explanations: {
+                    "Wojewódzki Konsultant...": "Błąd! Konsultant dermatologii doradza w leczeniu chorób skóry, a nie w systemowym bankowaniu tkanek.",
+                    "Krajowe Centrum Bankowania Tkanek i Komórek": "Prawidłowo! Ustawa wprost powierza funkcje referencyjne i konsultacyjne w tej dziedzinie bezpośrednio KCBTiK.",
+                    "Główny Inspektor Farmaceutyczny...": "Błąd! GIF kontroluje produkty lecznicze w aptekach i hurtowniach, a nie banki tkanek ludzkich."
+                }
+            },
+            {
+                id: 52,
+                question: "Czy bank tkanek i komórek może działać w Polsce całkowicie samodzielnie i bez wpisu do rejestru prowadzonego przez KCBTiK?",
+                correct: "nie, wpis do rejestru banków tkanek i komórek jest bezwzględnie wymagany",
+                options: ["tak, pod warunkiem zgody rektora uczelni medycznej", "nie, wpis do rejestru banków tkanek i komórek jest bezwzględnie wymagany", "tak, jeśli przechowuje wyłącznie krew pępowinową na użytek prywatny"],
+                explanations: {
+                    "tak, pod warunkiem zgody rektora...": "Błąd! Rektor nie zastępuje organów kontroli inspekcyjnej ministerstwa.",
+                    "nie, wpis do rejestru banków tkanek i komórek jest bezwzględnie wymagany": "Prawidłowo! Prowadzenie rejestru banków tkanek i komórek przez KCBTiK warunkuje legalność i przejrzystość całego systemu donacji tkankowej w Polsce.",
+                    "tak, jeśli przechowuje wyłącznie...": "Błąd! Banki komercyjne (rodzinne) również podlegają bezwzględnemu nadzorowi i wpisowi do rejestru."
+                }
+            }
+        ];
+
+        const userAnswers = {};
+
+        function renderQuiz() {
+            const container = document.getElementById('questions-container');
+            container.innerHTML = '';
+
+            quizData.forEach((q) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = "bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden transition-all duration-300";
+                qDiv.id = `q-card-${q.id}`;
+
+                let optionsHTML = '';
+                q.options.forEach(opt => {
+                    optionsHTML += `
+                        <label class="flex items-start gap-3 p-3 rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-50 transition-colors relative group">
+                            <input type="radio" name="q-${q.id}" value="${opt.replace(/"/g, '&quot;')}" 
+                                   onclick="selectAnswer(${q.id}, this.value)" 
+                                   class="mt-1 h-4 w-4 text-teal-600 border-slate-300 focus:ring-teal-500">
+                            <span class="text-sm font-medium text-slate-700 leading-tight">${opt}</span>
+                        </label>
+                    `;
+                });
+
+                qDiv.innerHTML = `
+                    <div class="p-4 border-b border-slate-100 bg-slate-50/50">
+                        <h3 class="text-sm md:text-base font-bold text-slate-900 leading-snug">${q.id}. ${q.question}</h3>
+                    </div>
+                    <div class="p-4 space-y-2" id="options-container-${q.id}">
+                        ${optionsHTML}
+                    </div>
+                    <div class="hidden px-4 py-3 bg-slate-50 border-t border-slate-100 flex flex-col gap-0.5 text-xs md:text-sm" id="feedback-${q.id}">
+                    </div>
+                `;
+                container.appendChild(qDiv);
+            });
+            updateStats();
+        }
+
+        function selectAnswer(questionId, selectedValue) {
+            userAnswers[questionId] = selectedValue;
+            
+            const question = quizData.find(q => q.id === questionId);
+            const isCorrect = (selectedValue === question.correct);
+
+            const card = document.getElementById(`q-card-${questionId}`);
+            if (isCorrect) {
+                card.className = "bg-white rounded-xl shadow-md border-l-4 border-l-emerald-500 border-slate-200 overflow-hidden transition-all duration-300";
+            } else {
+                card.className = "bg-white rounded-xl shadow-md border-l-4 border-l-rose-500 border-slate-200 overflow-hidden transition-all duration-300";
+            }
+
+            const feedbackArea = document.getElementById(`feedback-${questionId}`);
+            feedbackArea.className = `px-4 py-3 border-t border-slate-100 flex flex-col text-xs md:text-sm ${isCorrect ? 'bg-emerald-50 text-emerald-800' : 'bg-rose-50 text-rose-800'}`;
+            
+            const statusText = isCorrect 
+                ? `<span class="font-bold">✓ Prawidłowo!</span>` 
+                : `<span class="font-bold">✗ Błąd. Poprawna odpowiedź: <u>${question.correct}</u></span>`;
+            
+            const explanationText = `<p class="mt-1 text-slate-600 italic bg-white/80 p-2 rounded border border-slate-200/50">${question.explanations[selectedValue]}</p>`;
+            
+            feedbackArea.innerHTML = statusText + explanationText;
+            feedbackArea.style.display = 'flex';
+
+            updateStats();
+        }
+
+        function updateStats() {
+            const answeredCount = Object.keys(userAnswers).length;
+            let correctCount = 0;
+
+            quizData.forEach(q => {
+                if (userAnswers[q.id] === q.correct) {
+                    correctCount++;
+                }
+            });
+
+            document.getElementById('stats-counter').innerText = `Rozwiązano: ${answeredCount} z ${quizData.length} pytań`;
+            document.getElementById('score-display').innerText = `${correctCount} / ${quizData.length}`;
+            
+            const percentage = Math.round((answeredCount / quizData.length) * 100) || 0;
+            const scorePercentage = Math.round((correctCount / quizData.length) * 100) || 0;
+            document.getElementById('percent-display').innerText = `Postęp: ${percentage}% (Wynik: ${scorePercentage}%)`;
+        }
+
+        document.getElementById('score-display').innerText = `0 / ${quizData.length}`;
+
+        function showAllCorrectAnswers() {
+            quizData.forEach(q => {
+                const feedbackArea = document.getElementById(`feedback-${q.id}`);
+                feedbackArea.className = "px-4 py-2 border-t border-slate-100 flex flex-col text-xs bg-emerald-50 text-emerald-800";
+                feedbackArea.innerHTML = `<span class="font-bold">Poprawna odpowiedź: <u>${q.correct}</u></span>`;
+                feedbackArea.style.display = 'flex';
+                
+                const card = document.getElementById(`q-card-${q.id}`);
+                card.className = "bg-white rounded-xl shadow-md border-l-4 border-l-emerald-500 border-slate-200 overflow-hidden transition-all duration-300";
+            });
+        }
+
+        function resetTest() {
+            for (let key in userAnswers) {
+                delete userAnswers[key];
+            }
+            renderQuiz();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        window.onload = function() {
+            renderQuiz();
+        };
+    </script>
+</body>
+</html>
